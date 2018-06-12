@@ -63,9 +63,6 @@ BIM360MarkupExtension.prototype.createUI = function () {
 
     // if panel is NOT visible, exit the function
     if (!_this.panel.isVisible()) return;
-    // ok, it's visible, let's get the summary!
-
-    _this.panel.removeAllProperties();
 
     _this.loadMarkups();
   };
@@ -96,9 +93,24 @@ Autodesk.Viewing.theExtensionManager.registerExtension('BIM360MarkupExtension', 
 // *******************************************
 function BIM360MarkupPanel(viewer, container, id, title, options) {
   this.viewer = viewer;
-  Autodesk.Viewing.UI.PropertyPanel.call(this, container, id, title, options);
+  Autodesk.Viewing.UI.DockingPanel.call(this, container, id, title, options);
+
+  // the style of the docking panel
+  // use this built-in style to support Themes on Viewer 4+
+  this.container.classList.add('docking-panel-container-solid-color-a');
+  this.container.style.top = "10px";
+  this.container.style.left = "10px";
+  this.container.style.width = "auto";
+  this.container.style.height = "auto";
+  this.container.style.resize = "auto";
+
+  // this is where we should place the content of our panel
+  this.div = document.createElement('div');
+  this.div.style.margin = '20px';
+  this.container.appendChild(this.div);
+    // and may also append child elements...
 }
-BIM360MarkupPanel.prototype = Object.create(Autodesk.Viewing.UI.PropertyPanel.prototype);
+BIM360MarkupPanel.prototype = Object.create(Autodesk.Viewing.UI.DockingPanel.prototype);
 BIM360MarkupPanel.prototype.constructor = BIM360MarkupPanel;
 
 // *******************************************
@@ -136,7 +148,7 @@ BIM360MarkupExtension.prototype.getContainerId = function (href, urn, cb) {
     url: '/api/forge/bim360/container?href=' + href,
     success: function (res) {
       _this.containerId = res.container.id
-      _this.panel.addProperty('Container Id', _this.containerId, 'API Info');
+      //_this.panel.addProperty('Container Id', _this.containerId, 'API Info');
       cb();
     }
   });
@@ -144,14 +156,42 @@ BIM360MarkupExtension.prototype.getContainerId = function (href, urn, cb) {
 
 BIM360MarkupExtension.prototype.getMarkups = function (containerId, urn) {
   var _this = this;
+  _this.panel.div.innerHTML = '';
   urn = btoa(urn);
+
+  var markupExt;
+  _this.viewer.loadExtension('Autodesk.Viewing.MarkupsCore').then(function(ext){
+    markupExt = ext;
+  });
+
   jQuery.get('/api/forge/bim360/container/' + containerId + '/markups/' + urn, function (data) {
     _this.markups = data;
     var index = 1;
     data.forEach(function (markup) {
       var dateCreated = moment(markup.attributes.created_at);
-      _this.panel.addProperty('Author', markup.attributes.tags.userName, 'Markup ' + index);
-      _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Markup ' + index);
+
+      var markupDiv = document.createElement('div');
+      markupDiv.onclick = function () {
+        var selectedMarkupId = this.id;
+        data.forEach(function (markup) {
+          if (markup.id === selectedMarkupId) {
+            _this.viewer.restoreState(markup.attributes.markup_metadata, null, true);
+            markupExt.show();
+            markupExt.loadMarkups(markup.attributes.resource_urns.svg, selectedMarkupId);
+          }
+        });
+      };
+      markupDiv.id = markup.id;
+      markupDiv.style.color = '#FFFFFF';
+      markupDiv.innerHTML =
+        '<img width="100px" src="' + markup.attributes.resource_urns.screencapture + '">' +
+        '<br/>Author: ' + markup.attributes.tags.userName +
+        '<br/>Created at' + dateCreated.format('MMMM Do YYYY, h:mm a')
+
+      //_this.panel.addProperty('Author', markup.attributes.tags.userName, 'Markup ' + index);
+      //_this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Markup ' + index);
+
+      _this.panel.div.appendChild(markupDiv);
     })
   }).fail(function (error) {
     alert('Cannot read markups');

@@ -51,6 +51,14 @@ function onDocumentLoadFailure(viewerErrorCode) {
 
 function onItemLoadSuccess(viewer, item) {
   // item loaded, any custom action?
+  pushpinsExt.registerPushPinExtension(); // pushpinsExt is exposed in the extension bundle
+  var extensionOptions = {
+    hideRfisButton: true,
+    hideFieldIssuesButton: true,
+  };
+  viewer.loadExtension('Autodesk.BIM360.Extension.PushPin', extensionOptions);
+  PushPinExtensionHandle = viewer.getExtension('Autodesk.BIM360.Extension.PushPin'); // thenable
+  PushPinExtensionHandle.showAll();
 }
 
 function onItemLoadFail(errorCode) {

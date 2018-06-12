@@ -153,6 +153,21 @@ BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
       _this.panel.addProperty('Location', issue.attributes.title, 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Location', issue.attributes.location_description, 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Issue ' + issue.attributes.identifier);
+
+      var issueAttributes = issue.attributes;
+      var pushpinAttributes = issue.attributes.pushpin_attributes;
+      if (pushpinAttributes) {
+        PushPinExtensionHandle.createItem({
+          id: issue.id,
+          label: issueAttributes.identifier,
+          status: issue.type && issueAttributes.status.indexOf(issue.type) === -1 ? `${issue.type}-${issueAttributes.status}` : issueAttributes.status,
+          position: pushpinAttributes.location,
+          type: issue.type,
+          objectId: pushpinAttributes.object_id,
+          viewerState: pushpinAttributes.viewer_state
+        });
+        _this.viewer.restoreState(pushpinAttributes.viewer_state);
+      }
     })
   }).fail(function (error) {
     alert('Cannot read Issues');
