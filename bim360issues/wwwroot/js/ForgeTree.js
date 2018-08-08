@@ -54,9 +54,18 @@ $(document).ready(function () {
       }
     });
   })
+
+  $.getJSON("/api/forge/clientid", function (res) {
+    $("#ClientID").val(res.id);
+    $("#provisionAccountSave").click(function () {
+      $('#provisionAccountModal').modal('toggle');
+      $('#userHubs').jstree(true).refresh();
+    });
+  });
 });
 
 function prepareUserHubsTree() {
+  var haveBIM360Hub = false;
   $('#userHubs').jstree({
     'core': {
       'themes': { "icons": true },
@@ -68,6 +77,17 @@ function prepareUserHubsTree() {
         'data': function (node) {
           $('#userHubs').jstree(true).toggle_node(node);
           return { "id": node.id };
+        },
+        "success": function (nodes) {
+          nodes.forEach(function (n) {
+            if (n.type === 'bim360Hubs' && n.id.indexOf('b.') > 0)
+              haveBIM360Hub = true;
+          });
+
+          if (!haveBIM360Hub) {
+            $("#provisionAccountModal").modal();
+            haveBIM360Hub = true;
+          }
         }
       }
     },

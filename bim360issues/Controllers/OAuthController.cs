@@ -23,6 +23,7 @@ using Autodesk.Forge;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace bim360issues.Controllers
 {
@@ -91,6 +92,13 @@ namespace bim360issues.Controllers
             Credentials credentials = await Credentials.CreateFromCodeAsync(code, Response.Cookies);
 
             return Redirect("/");
+        }
+
+        [HttpGet]
+        [Route("api/forge/clientid")] // see Web.Config FORGE_CALLBACK_URL variable
+        public dynamic GetClientID()
+        {
+            return new { id = Credentials.GetAppSetting("FORGE_CLIENT_ID") };
         }
     }
 
