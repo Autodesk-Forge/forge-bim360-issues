@@ -1,4 +1,4 @@
-# data.management-csharp-bim360
+# data.management-csharp-bim360.issues
 
 ![Platforms](https://img.shields.io/badge/platform-Windows|MacOS-lightgray.svg)
 ![.NET](https://img.shields.io/badge/.NET%20Core-2.1-blue.svg)
@@ -17,15 +17,13 @@ Demonstrate the **Markup** and **Document Issues** API for BIM 360 using built-i
 
 Uses [Data Management](https://developer.autodesk.com/en/docs/data/v2) to list hubs, projects and files. Uses [Viewer](https://developer.autodesk.com/en/docs/viewer/v6/overview/) to show models, and extensions to create toolbar buttons and panels. Lists [BIM 360](https://developer.autodesk.com/en/docs/bim360/v1/overview/) Markup and Document Issues.
 
-This sample is based on the [Learn Forge](http://learnforge.autodesk.io) tutorial sample (.NET Core).
-
 ## Industry workflow
 
 With the BIM 360 Markup & Document Issues API an application can read that information and create integrations, e.g. export data from BIM 360.
 
 ## Thumbnail
 
-![](image.png)
+![](bim360issues/wwwroot/img/app_demo.gif)
 
 ## Live version
 
