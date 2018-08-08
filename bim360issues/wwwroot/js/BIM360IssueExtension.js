@@ -168,7 +168,6 @@ BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
           objectId: pushpinAttributes.object_id,
           viewerState: pushpinAttributes.viewer_state
         });
-        //_this.viewer.restoreState(pushpinAttributes.viewer_state);
       }
     })
   }).fail(function (error) {

@@ -26,7 +26,7 @@ function launchViewer(urn) {
   var documentId = 'urn:' + urn;
   Autodesk.Viewing.Initializer(options, function onInitialized() {
     viewerApp = new Autodesk.Viewing.ViewingApplication('forgeViewer');
-    viewerApp.registerViewer(viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D, { extensions: ['BIM360MarkupExtension','BIM360IssueExtension'] });
+    viewerApp.registerViewer(viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D, { extensions: ['BIM360IssueExtension'] });
     viewerApp.loadDocument(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
   });
 }
@@ -51,7 +51,6 @@ function onDocumentLoadFailure(viewerErrorCode) {
 
 function onItemLoadSuccess(viewer, item) {
   // item loaded, any custom action?
-  ///pushpinsExt.registerPushPinExtension(); // pushpinsExt is exposed in the extension bundle
   var extensionOptions = {
     hideRfisButton: true,
     hideFieldIssuesButton: true,

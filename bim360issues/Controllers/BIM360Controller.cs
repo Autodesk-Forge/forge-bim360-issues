@@ -17,11 +17,9 @@
 /////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Autodesk.Forge;
-using Autodesk.Forge.Model;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.Text;
@@ -81,29 +79,6 @@ namespace bim360issues.Controllers
       request.AddHeader("Authorization", "Bearer " + credentials.TokenInternal);
       request.AddHeader("x-ads-acm-namespace", "WIPDM");
       return await client.ExecuteTaskAsync(request);
-    }
-
-    [HttpGet]
-    [Route("api/forge/bim360/container/{containerId}/markups/{urn}")]
-    public async Task<JArray> DocumentMarkups(string containerId, string urn)
-    {
-      IRestResponse markupsResponse = await Get(containerId, "markups", urn);
-
-      dynamic markups = JObject.Parse(markupsResponse.Content);
-      foreach (dynamic markup in markups.data)
-      {
-        IRestResponse svg = await GetResource(markup.attributes.resource_urns.svg.ToString());
-        IRestResponse screencapture = await GetResource(markup.attributes.resource_urns.screencapture.ToString());
-
-        // replace on the response...
-        markup.attributes.resource_urns.svg = svg.Content;
-        markup.attributes.resource_urns.screencapture = screencapture.Content;
-
-        markup.links = null;
-        markup.relationships = null;
-      }
-
-      return markups.data;
     }
 
     [HttpGet]
