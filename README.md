@@ -13,13 +13,11 @@
 
 # Description
 
-Demonstrate the **Markup** and **Document Issues** API for BIM 360 using built-in PushPin Viewer extension.
+Demonstrate how to read BIM 360 **Document Issues** using built-in PushPin Viewer extension.
 
-Uses [Data Management](https://developer.autodesk.com/en/docs/data/v2) to list hubs, projects and files. Uses [Viewer](https://developer.autodesk.com/en/docs/viewer/v6/overview/) to show models, and extensions to create toolbar buttons and panels. Lists [BIM 360](https://developer.autodesk.com/en/docs/bim360/v1/overview/) Markup and Document Issues.
+Uses [Data Management](https://developer.autodesk.com/en/docs/data/v2) to list hubs, projects and files. Uses [Viewer](https://developer.autodesk.com/en/docs/viewer/v6/overview/) to show models and extensions to create toolbar buttons and panels. The lists [BIM 360](https://developer.autodesk.com/en/docs/bim360/v1/overview/) Document Issues on the panel. Uses the `Autodesk.BIM360.Extension.PushPin` built-in extension to show pins on the model. 
 
-## Industry workflow
-
-With the BIM 360 Markup & Document Issues API an application can read that information and create integrations, e.g. export data from BIM 360.
+This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/docs/bim360/v1/tutorials/retrieve-issues/) tutorial.
 
 ## Thumbnail
 
@@ -83,6 +81,11 @@ Documentation:
 - [BIM 360 API](https://developer.autodesk.com/en/docs/bim360/v1/overview/) and [App Provisioning](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps)
 - [Data Management API](https://developer.autodesk.com/en/docs/data/v2/overview/)
 - [Viewer](https://developer.autodesk.com/en/docs/viewer/v6)
+
+Tutorials:
+
+- [View BIM 360 Models](http://learnforge.autodesk.io/#/tutorials/viewhubmodels)
+- [Retrieve Issues](https://developer.autodesk.com/en/docs/bim360/v1/tutorials/retrieve-issues)
 
 Blogs:
 
