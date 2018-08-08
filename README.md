@@ -104,9 +104,7 @@ This sample uses .NET Core and works fine on both Windows and MacOS, see [this t
 
 1. **Cannot see my BIM 360 projects**: Make sure to provision the Forge App Client ID within the BIM 360 Account, [learn more here](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps). This requires the Account Admin permission.
 
-2. **error setting certificate verify locations** error: may happen on Windows, use the following: 
-
- `git config --global http.sslverify "false"`
+2. **error setting certificate verify locations** error: may happen on Windows, use the following: `git config --global http.sslverify "false"`
 
 ## License
 
