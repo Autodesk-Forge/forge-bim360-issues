@@ -146,6 +146,8 @@ BIM360IssueExtension.prototype.getContainerId = function (href, urn, cb) {
 BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
   var _this = this;
   urn = btoa(urn);
+  PushPinExtensionHandle = _this.viewer.getExtension('Autodesk.BIM360.Extension.PushPin'); // thenable
+  PushPinExtensionHandle.showAll();
   jQuery.get('/api/forge/bim360/container/' + containerId + '/issues/' + urn, function (data) {
     _this.Issues = data;
     data.forEach(function (issue) {
@@ -166,7 +168,7 @@ BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
           objectId: pushpinAttributes.object_id,
           viewerState: pushpinAttributes.viewer_state
         });
-        _this.viewer.restoreState(pushpinAttributes.viewer_state);
+        //_this.viewer.restoreState(pushpinAttributes.viewer_state);
       }
     })
   }).fail(function (error) {

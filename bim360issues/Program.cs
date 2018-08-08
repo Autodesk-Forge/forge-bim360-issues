@@ -16,24 +16,30 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using System.Web.Http;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace forgesample
+namespace bim360issues
 {
-  public static class WebApiConfig
+    public class Program
     {
-        public static void Register(HttpConfiguration config)
+        public static void Main(string[] args)
         {
-            // Web API configuration and services
-
-            // Web API routes
-            config.MapHttpAttributeRoutes();
-
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                CreateWebHostBuilder(args).UseUrls("http://localhost:3000/").Build().Run();
+            else
+                CreateWebHostBuilder(args).Build().Run();
         }
+
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>();
     }
 }

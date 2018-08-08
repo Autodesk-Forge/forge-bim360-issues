@@ -2,9 +2,8 @@
 
 # Description
 
-![Platforms](https://img.shields.io/badge/platform-Windows-lightgray.svg)
-![.NET](https://img.shields.io/badge/.NET-4.7-blue.svg)
-[![ASP.NET](https://img.shields.io/badge/ASP.NET-4.7-blue.svg)](https://asp.net/)
+![Platforms](https://img.shields.io/badge/platform-Windows|MacOS-lightgray.svg)
+![.NET](https://img.shields.io/badge/.NET Core-2.1-blue.svg)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://opensource.org/licenses/MIT)
 
 [![oAuth2](https://img.shields.io/badge/oAuth2-v1-green.svg)](http://developer.autodesk.com/)
@@ -43,6 +42,10 @@ Open the **web.config** file and adjust the Forge Client ID & Secret. If you pla
 No need to adjust the **FORGE\_CALLBACK\_URL** appSettings to run it locally.
 
 Compile the solution, Visual Studio should download the NUGET packages ([Autodesk Forge](https://www.nuget.org/packages/Autodesk.Forge/), [RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/)). 
+
+## Tips & Tricks
+
+This sample uses .NET Core and works fine on both Windows and MacOS, see [this tutorial for MacOS](https://github.com/augustogoncalves/dotnetcoreheroku).
 
 ## Troubleshooting
 
