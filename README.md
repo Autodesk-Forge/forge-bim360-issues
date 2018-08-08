@@ -1,62 +1,115 @@
 # data.management-csharp-bim360
 
-# Description
-
 ![Platforms](https://img.shields.io/badge/platform-Windows|MacOS-lightgray.svg)
-![.NET](https://img.shields.io/badge/.NET Core-2.1-blue.svg)
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://opensource.org/licenses/MIT)
+![.NET](https://img.shields.io/badge/.NET%20Core-2.1-blue.svg)
+[![License](http://img.shields.io/:license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 [![oAuth2](https://img.shields.io/badge/oAuth2-v1-green.svg)](http://developer.autodesk.com/)
 [![Data-Management](https://img.shields.io/badge/Data%20Management-v1-green.svg)](http://developer.autodesk.com/)
-[![OSS](https://img.shields.io/badge/OSS-v2-green.svg)](http://developer.autodesk.com/)
+[![Viewer](https://img.shields.io/badge/Viewer-v6-green.svg)](http://developer.autodesk.com/)
 [![BIM-360](https://img.shields.io/badge/BIM%20360-v1-green.svg)](http://developer.autodesk.com/)
 
-Demonstrate the **Markup** and **Document Issues** API for BIM 360 using Viewer Extensions, as shown on the image below.
+![Intermediate](https://img.shields.io/badge/Level-Intermediate-blue.svg)
+
+# Description
+
+Demonstrate the **Markup** and **Document Issues** API for BIM 360 using built-in PushPin Viewer extension.
+
+Uses [Data Management](https://developer.autodesk.com/en/docs/data/v2) to list hubs, projects and files. Uses [Viewer](https://developer.autodesk.com/en/docs/viewer/v6/overview/) to show models, and extensions to create toolbar buttons and panels. Lists [BIM 360](https://developer.autodesk.com/en/docs/bim360/v1/overview/) Markup and Document Issues.
+
+This sample is based on the [Learn Forge](http://learnforge.autodesk.io) tutorial sample (.NET Core).
+
+## Industry workflow
+
+With the BIM 360 Markup & Document Issues API an application can read that information and create integrations, e.g. export data from BIM 360.
+
+## Thumbnail
 
 ![](image.png)
 
-This sample is based on the [Learn Forge](http://learnforge.autodesk.io) tutorials.
+## Live version
+
+[bim360issues.herokuapp.com](https://bim360issues.herokuapp.com/)
 
 # Setup
 
-For using this sample, you need an Autodesk developer credentials. Visit the [Forge Developer Portal](https://developer.autodesk.com), sign up for an account, then [create an app](https://developer.autodesk.com/myapps/create). For this new app, use **http://localhost:3000/api/forge/callback/oauth** as Callback URL, although is not used on 2-legged flow. Finally take note of the **Client ID** and **Client Secret**.
+## Pre-requirements
 
-Provision your Client ID with your BIM 360 Account, [learn more](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps)
+1. **BIM 360 Account**: must be Account Admin to add the app integration. [Learn about provisioning](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps).
+2. **Forge Account**: Learn how to create a Forge Account, activate subscription and create an app at [this tutorial](http://learnforge.autodesk.io/#/account/). 
+3. **Visual Studio**: Either Community (Windows) or Code (Windows, MacOS).
+4. **.NET Core** basic knowledge with C#
 
-### Run locally
+## Running locally
 
 Clone this project or download it. It's recommended to install [GitHub desktop](https://desktop.github.com/). To clone it via command line, use the following (**Terminal** on MacOSX/Linux, **Git Shell** on Windows):
 
-    git clone https://github.com/autodesk-forge/forge.learning.viewhubmodels
+    git clone https://github.com/autodesk-forge/data.management-csharp-bim360
 
-Open the **web.config** file and adjust the Forge Client ID & Secret. If you plan to deploy to Appharbor, configure the variables on the host settings (no need to change this web.config file).
+**Visual Studio** (Windows):
 
-```xml
-<appSettings>
-  <add key="FORGE_CLIENT_ID" value="" />
-  <add key="FORGE_CLIENT_SECRET" value="" />
-  <add key="FORGE_CALLBACK_URL" value="http://localhost:3000/api/forge/callback/oauth" />
-</appSettings>
+Right-click on the project, then go to **Debug**. Adjust the settings as shown below. 
+
+![](bim360issues/wwwroot/img/visual_studio_settings.png) 
+
+**Visual Sutdio Code** (Windows, MacOS):
+
+Open the folder, at the bottom-right, select **Yes** and **Restore**. This restores the packages (e.g. Autodesk.Forge) and creates the launch.json file.
+
+![](bim360issues/wwwroot/img/visual_code_restore.png)
+
+At the `.vscode\launch.json`, find the env vars and add your Forge Client ID, Secret and callback URL. Also define the `ASPNETCORE_URLS` variable. The end result should be as shown below:
+
+```json
+"env": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "ASPNETCORE_URLS" : "http://localhost:3000",
+    "FORGE_CLIENT_ID": "your id here",
+    "FORGE_CLIENT_SECRET": "your secret here",
+    "FORGE_CALLBACK_URL": "http://localhost:3000/api/forge/callback/oauth",
+},
 ```
 
-No need to adjust the **FORGE\_CALLBACK\_URL** appSettings to run it locally.
+## Deployment
 
-Compile the solution, Visual Studio should download the NUGET packages ([Autodesk Forge](https://www.nuget.org/packages/Autodesk.Forge/), [RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/)). 
+To deploy this application to Heroku, the **Callback URL** for Forge must use your `.herokuapp.com` address. After clicking on the button below, at the Heroku Create New App page, set your Client ID, Secret and Callback URL for Forge.
 
-## Tips & Tricks
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+Watch [this video](https://www.youtube.com/watch?v=Oqa9O20Gj0c) on how deploy samples to Heroku.
+
+# Further Reading
+
+Documentation:
+
+- [BIM 360 API](https://developer.autodesk.com/en/docs/bim360/v1/overview/) and [App Provisioning](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps)
+- [Data Management API](https://developer.autodesk.com/en/docs/data/v2/overview/)
+- [Viewer](https://developer.autodesk.com/en/docs/viewer/v6)
+
+Blogs:
+
+- [Forge Blog](https://forge.autodesk.com/categories/bim-360-api)
+- [Field of View](https://fieldofviewblog.wordpress.com/), a BIM focused blog
+
+Other samples:
+
+- [Webhooks notifications](https://github.com/Autodesk-Forge/data.management-nodejs-webhook) (see API documentation [here](https://developer.autodesk.com/en/docs/webhooks/v1/overview/))
+
+### Tips & Tricks
 
 This sample uses .NET Core and works fine on both Windows and MacOS, see [this tutorial for MacOS](https://github.com/augustogoncalves/dotnetcoreheroku).
 
-## Troubleshooting
+### Troubleshooting
 
-After installing Github desktop for Windows, on the Git Shell, if you see a ***error setting certificate verify locations*** error, use the following:
+1. **Cannot see my BIM 360 projects**: Make sure to provision the Forge App Client ID within the BIM 360 Account, [learn more here](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps). This requires the Account Admin permission.
 
-    git config --global http.sslverify "false"
+2. **error setting certificate verify locations** error: may happen on Windows, use the following: 
 
-# License
+ `git config --global http.sslverify "false"`
 
-This sample is licensed under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-Please see the [LICENSE](LICENSE) file for full details.
+## License
+
+This sample is licensed under the terms of the [MIT License](http://opensource.org/licenses/MIT). Please see the [LICENSE](LICENSE) file for full details.
 
 ## Written by
 
