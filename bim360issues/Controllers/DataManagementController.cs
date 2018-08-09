@@ -83,10 +83,10 @@ namespace bim360issues.Controllers
                 switch ((string)hubInfo.Value.attributes.extension.type)
                 {
                     case "hubs:autodesk.core:Hub":
-                        nodeType = "hubs";
+                        nodeType = "unsupported";
                         break;
                     case "hubs:autodesk.a360:PersonalHub":
-                        nodeType = "personalHub";
+                        nodeType = "unsupported";
                         break;
                     case "hubs:autodesk.bim360:Account":
                         nodeType = "bim360Hubs";
@@ -94,7 +94,7 @@ namespace bim360issues.Controllers
                 }
 
                 // create a treenode with the values
-                jsTreeNode hubNode = new jsTreeNode(hubInfo.Value.links.self.href, hubInfo.Value.attributes.name, nodeType, true);
+                jsTreeNode hubNode = new jsTreeNode(hubInfo.Value.links.self.href, hubInfo.Value.attributes.name, nodeType, !(nodeType == "unsupported"));
                 nodes.Add(hubNode);
             }
 

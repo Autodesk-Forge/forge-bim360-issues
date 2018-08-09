@@ -164,8 +164,8 @@ BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
     _this.Issues = data;
     data.forEach(function (issue) {
       var dateCreated = moment(issue.attributes.created_at);
-      _this.panel.addProperty('Location', issue.attributes.title, 'Issue ' + issue.attributes.identifier);
-      _this.panel.addProperty('Location', issue.attributes.location_description, 'Issue ' + issue.attributes.identifier);
+      _this.panel.addProperty('Title', issue.attributes.title, 'Issue ' + issue.attributes.identifier);
+      _this.panel.addProperty('Location', stringOrEmpty(issue.attributes.location_description), 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Issue ' + issue.attributes.identifier);
 
       var issueAttributes = issue.attributes;
@@ -185,4 +185,9 @@ BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
   }).fail(function (error) {
     alert('Cannot read Issues');
   });
+}
+
+function stringOrEmpty(str){
+  if (str==null) return '';
+  return str;
 }
