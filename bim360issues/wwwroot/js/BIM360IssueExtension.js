@@ -137,7 +137,6 @@ BIM360IssueExtension.prototype.getContainerId = function (href, urn, cb) {
     url: '/api/forge/bim360/container?href=' + href,
     success: function (res) {
       _this.containerId = res.container.id
-      _this.panel.addProperty('Container Id', _this.containerId, 'API Info');
       cb();
     }
   });
