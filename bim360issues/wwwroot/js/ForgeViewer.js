@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Partner Development
 //
@@ -18,7 +18,7 @@
 
 var viewerApp;
 
-function launchViewer(urn) {
+function launchViewer(urn, viewableId) {
   if (viewerApp != null) {
     var thisviewer = viewerApp.getCurrentViewer();
     if (thisviewer) {
@@ -37,22 +37,26 @@ function launchViewer(urn) {
   Autodesk.Viewing.Initializer(options, function onInitialized() {
     viewerApp = new Autodesk.Viewing.ViewingApplication('forgeViewer');
     viewerApp.registerViewer(viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D, { extensions: ['BIM360IssueExtension'] });
-    viewerApp.loadDocument(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+    viewerApp.loadDocument(documentId, function (doc) {
+      // We could still make use of Document.getSubItemsWithProperties()
+      // However, when using a ViewingApplication, we have access to the **bubble** attribute,
+      // which references the root node of a graph that wraps each object from the Manifest JSON.
+      var viewables = viewerApp.bubble.search({ 'type': 'geometry' });
+      if (viewables.length === 0) {
+        console.error('Document contains no viewables.');
+        return;
+      }
+
+      if (viewableId != '') {
+        viewables.forEach(function (viewable) {
+          if (viewable.data.viewableID == viewableId)
+            viewerApp.selectItem(viewable.data, onItemLoadSuccess, onItemLoadFail);
+        });
+      }
+      else
+        viewerApp.selectItem(viewables[0].data, onItemLoadSuccess, onItemLoadFail);
+    }, onDocumentLoadFailure);
   });
-}
-
-function onDocumentLoadSuccess(doc) {
-  // We could still make use of Document.getSubItemsWithProperties()
-  // However, when using a ViewingApplication, we have access to the **bubble** attribute,
-  // which references the root node of a graph that wraps each object from the Manifest JSON.
-  var viewables = viewerApp.bubble.search({ 'type': 'geometry' });
-  if (viewables.length === 0) {
-    console.error('Document contains no viewables.');
-    return;
-  }
-
-  // Choose any of the avialble viewables
-  viewerApp.selectItem(viewables[0].data, onItemLoadSuccess, onItemLoadFail);
 }
 
 function onDocumentLoadFailure(viewerErrorCode) {

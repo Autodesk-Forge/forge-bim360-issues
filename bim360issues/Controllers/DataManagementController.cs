@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Autodesk.Forge;
 using Autodesk.Forge.Model;
+using Newtonsoft.Json.Linq;
 
 namespace bim360issues.Controllers
 {
@@ -167,18 +168,55 @@ namespace bim360issues.Controllers
             string folderId = idParams[idParams.Length - 1];
             string projectId = idParams[idParams.Length - 3];
 
-            var folderContents = await folderApi.GetFolderContentsAsync(projectId, folderId);
-            foreach (KeyValuePair<string, dynamic> folderContentItem in new DynamicDictionaryItems(folderContents.data))
-            {
-                string extensionType = folderContentItem.Value.attributes.extension.type;
-                if (extensionType.IndexOf("File") == -1 && extensionType.IndexOf("Folder") == -1 && extensionType.IndexOf("C4RModel") == -1) continue;
+            // check if folder specifies visible types
+            JArray visibleTypes = null;
+            dynamic folder = (await folderApi.GetFolderAsync(projectId, folderId)).ToJson();
+            if (folder.data.attributes != null && folder.data.attributes.extension != null && folder.data.attributes.extension.data != null && !(folder.data.attributes.extension.data is JArray) && folder.data.attributes.extension.data.visibleTypes != null)
+                visibleTypes = folder.data.attributes.extension.data.visibleTypes;
 
-                string displayName = (string.IsNullOrWhiteSpace(folderContentItem.Value.attributes.displayName) ? folderContentItem.Value.attributes.extension.data.sourceFileName : folderContentItem.Value.attributes.displayName);
-                jsTreeNode itemNode = new jsTreeNode(folderContentItem.Value.links.self.href, displayName, (string)folderContentItem.Value.type, true);
+            var folderContents = await folderApi.GetFolderContentsAsync(projectId, folderId);
+            var folderData = new DynamicDictionaryItems(folderContents.data);
+            var folderIncluded = (folderContents.Dictionary.ContainsKey("included") ? new DynamicDictionaryItems(folderContents.included) : null);
+            foreach (KeyValuePair<string, dynamic> folderContentItem in folderData)
+            {
+                // do we need to skipsome item?
+                string extension = folderContentItem.Value.attributes.extension.type;
+                if (extension.IndexOf("Folder") == -1 && visibleTypes != null && !visibleTypes.ToString().Contains(extension)) continue;
+
+
+                jsTreeNode itemNode = null;
+                if (extension.IndexOf("Document") > 0)
+                {
+                    foreach (KeyValuePair<string, dynamic> includedItem in folderIncluded)
+                        if (includedItem.Value.relationships.item.data.id.IndexOf(folderContentItem.Value.id) != -1)
+                            foreach (KeyValuePair<string, dynamic> folderContentItem1 in folderData)
+                            {
+                                if (folderContentItem1.Value.attributes.extension.type.IndexOf("File") == -1) continue;
+                                if (folderContentItem1.Value.attributes.extension.data.sourceFileName == includedItem.Value.attributes.extension.data.sourceFileName)
+                                {
+                                    string urn = string.Format("{0}|{1}|{2}",
+                                        folderContentItem.Value.id, // item urn
+                                        Base64Encode(folderContentItem1.Value.relationships.tip.data.id), // version urn
+                                        includedItem.Value.attributes.extension.data.viewableId // viewableID
+                                    );
+                                    itemNode = new jsTreeNode(urn, includedItem.Value.attributes.name, "versions", false);
+                                }
+                            }
+                }
+                else
+                    itemNode = new jsTreeNode(folderContentItem.Value.links.self.href, folderContentItem.Value.attributes.displayName, (string)folderContentItem.Value.type, true);
+
                 nodes.Add(itemNode);
             }
 
             return nodes;
+        }
+
+        private string GetName(DynamicDictionaryItems folderIncluded, KeyValuePair<string, dynamic> folderContentItem)
+        {
+
+
+            return "N/A";
         }
 
         private async Task<IList<jsTreeNode>> GetItemVersions(string href)
@@ -203,17 +241,23 @@ namespace bim360issues.Controllers
 
                 string urn = string.Empty;
                 try { urn = (string)version.Value.relationships.derivatives.data.id; }
-                catch { urn = "not_available"; } // some BIM 360 versions don't have viewable
+                catch { urn = Base64Encode(version.Value.id); } // some BIM 360 versions don't have viewable
 
                 jsTreeNode node = new jsTreeNode(
-                    urn, 
-                    string.Format("v{0}: {1} by {2}", verNum, versionDate.ToString("dd/MM/yy HH:mm:ss"), userName), 
-                    "versions", 
+                    urn,
+                    string.Format("v{0}: {1} by {2}", verNum, versionDate.ToString("dd/MM/yy HH:mm:ss"), userName),
+                    "versions",
                     false);
                 nodes.Add(node);
             }
 
             return nodes;
+        }
+
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes).Replace("/", "_");
         }
 
         public class jsTreeNode

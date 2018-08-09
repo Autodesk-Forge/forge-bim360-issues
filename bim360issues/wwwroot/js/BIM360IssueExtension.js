@@ -106,10 +106,22 @@ BIM360IssuePanel.prototype.constructor = BIM360IssuePanel;
 // *******************************************
 function getSelectedNode() {
   var node = $('#userHubs').jstree(true).get_selected(true)[0];
+  var parent;
   for (var i = 0; i < node.parents.length; i++) {
-    var parent = node.parents[i];
-    if (parent.indexOf('hubs') > 0 && parent.indexOf('projects') > 0)
-      return { 'project': parent, 'urn': (node.type == 'versions' ? id(node.parents[0]) : '') };
+    var p = node.parents[i];
+    if (p.indexOf('hubs') > 0 && p.indexOf('projects') > 0) parent = p;
+  }
+
+  if (node.id.indexOf('|') > -1) { // Plans folder
+    var params = node.id.split("|");
+    return { 'project': parent, 'urn': params[0] };
+  }
+  else { // other folders
+    for (var i = 0; i < node.parents.length; i++) {
+      var parent = node.parents[i];
+      if (parent.indexOf('hubs') > 0 && parent.indexOf('projects') > 0)
+        return { 'project': parent, 'urn': (node.type == 'versions' ? id(node.parents[0]) : '') };
+    }
   }
   return null;
 }
@@ -144,6 +156,7 @@ BIM360IssueExtension.prototype.getContainerId = function (href, urn, cb) {
 
 BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
   var _this = this;
+  urn = urn.split('?')[0]
   urn = btoa(urn);
   PushPinExtensionHandle = _this.viewer.getExtension('Autodesk.BIM360.Extension.PushPin'); // thenable
   PushPinExtensionHandle.showAll();

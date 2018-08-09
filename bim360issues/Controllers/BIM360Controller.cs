@@ -30,70 +30,54 @@ namespace bim360issues.Controllers
     {
         private const string BASE_URL = "https://developer.api.autodesk.com";
 
-    [HttpGet]
-    [Route("api/forge/bim360/container")]
-    public async Task<JObject> GetPublicTokenAsync(string href)
-    {
-      string[] idParams = href.Split('/');
-      string projectId = idParams[idParams.Length - 1];
-      string hubId = idParams[idParams.Length - 3];
+        [HttpGet]
+        [Route("api/forge/bim360/container")]
+        public async Task<JObject> GetContainer(string href)
+        {
+            string[] idParams = href.Split('/');
+            string projectId = idParams[idParams.Length - 1];
+            string hubId = idParams[idParams.Length - 3];
 
-      Credentials credentials = await Credentials.FromSessionAsync(base.Request.Cookies, Response.Cookies);
+            Credentials credentials = await Credentials.FromSessionAsync(base.Request.Cookies, Response.Cookies);
 
-      ProjectsApi projectsApi = new ProjectsApi();
-      projectsApi.Configuration.AccessToken = credentials.TokenInternal;
-      var project = await projectsApi.GetProjectAsync(hubId, projectId);
-      var issues = project.data.relationships.issues.data;
-      if (issues.type != "issueContainerId") return null;
-      JObject res = new JObject();
-      res.Add("container", JObject.Parse(issues.ToString()));
-      res.Add("project", JObject.Parse(project.data.ToString()));
-      return res;
-    }
+            ProjectsApi projectsApi = new ProjectsApi();
+            projectsApi.Configuration.AccessToken = credentials.TokenInternal;
+            var project = await projectsApi.GetProjectAsync(hubId, projectId);
+            var issues = project.data.relationships.issues.data;
+            if (issues.type != "issueContainerId") return null;
+            JObject res = new JObject();
+            res.Add("container", JObject.Parse(issues.ToString()));
+            res.Add("project", JObject.Parse(project.data.ToString()));
+            return res;
+        }
 
-    public async Task<IRestResponse> Get(string containerId, string resource, string urn)
-    {
-      Credentials credentials = await Credentials.FromSessionAsync(base.Request.Cookies, Response.Cookies);
-      urn = Encoding.UTF8.GetString(Convert.FromBase64String(urn));
+        public async Task<IRestResponse> Get(string containerId, string resource, string urn)
+        {
+            Credentials credentials = await Credentials.FromSessionAsync(base.Request.Cookies, Response.Cookies);
+            urn = Encoding.UTF8.GetString(Convert.FromBase64String(urn));
 
-      RestClient client = new RestClient(BASE_URL);
-      RestRequest request = new RestRequest("/issues/v1/containers/{container_id}/{resource}?filter[target_urn]={urn}", RestSharp.Method.GET);
-      request.AddParameter("container_id", containerId, ParameterType.UrlSegment);
-      request.AddParameter("urn", urn, ParameterType.UrlSegment);
-      request.AddParameter("resource", resource, ParameterType.UrlSegment);
-      request.AddHeader("Authorization", "Bearer " + credentials.TokenInternal);
-      return await client.ExecuteTaskAsync(request);
-    }
+            RestClient client = new RestClient(BASE_URL);
+            RestRequest request = new RestRequest("/issues/v1/containers/{container_id}/{resource}?filter[target_urn]={urn}", RestSharp.Method.GET);
+            request.AddParameter("container_id", containerId, ParameterType.UrlSegment);
+            request.AddParameter("urn", urn, ParameterType.UrlSegment);
+            request.AddParameter("resource", resource, ParameterType.UrlSegment);
+            request.AddHeader("Authorization", "Bearer " + credentials.TokenInternal);
+            return await client.ExecuteTaskAsync(request);
+        }
 
-    public async Task<IRestResponse> GetResource(string urn)
-    {
-      Credentials credentials = await Credentials.FromSessionAsync(base.Request.Cookies, Response.Cookies);
+        [HttpGet]
+        [Route("api/forge/bim360/container/{containerId}/issues/{urn}")]
+        public async Task<JArray> DocumentIssues(string containerId, string urn)
+        {
+            IRestResponse documentIssuesResponse = await Get(containerId, "issues", urn);
 
-      string objectName = urn.Substring(urn.LastIndexOf('/') + 1);
-      string bucketKey = urn.Substring(urn.LastIndexOf(':') + 1, urn.LastIndexOf('/') - urn.LastIndexOf(':') -1);
+            dynamic issues = JObject.Parse(documentIssuesResponse.Content);
+            foreach (dynamic issue in issues.data)
+            {
+                // do some work with the data?
+            }
 
-      RestClient client = new RestClient(BASE_URL);
-      RestRequest request = new RestRequest("/oss/v2/buckets/{bucketKey}/objects/{objectName}", RestSharp.Method.GET);
-      request.AddParameter("bucketKey", bucketKey, ParameterType.UrlSegment);
-      request.AddParameter("objectName", objectName, ParameterType.UrlSegment);
-      request.AddHeader("Authorization", "Bearer " + credentials.TokenInternal);
-      request.AddHeader("x-ads-acm-namespace", "WIPDM");
-      return await client.ExecuteTaskAsync(request);
-    }
-
-    [HttpGet]
-    [Route("api/forge/bim360/container/{containerId}/issues/{urn}")]
-    public async Task<JArray> DocumentIssues(string containerId, string urn)
-    {
-      IRestResponse documentIssuesResponse = await Get(containerId, "issues", urn);
-
-      dynamic issues = JObject.Parse(documentIssuesResponse.Content);
-      foreach (dynamic issue in issues.data)
-      {
-        // ToDo?
-      }
-
-      return issues.data;
-    }
+            return issues.data;
+        }
     }
 }

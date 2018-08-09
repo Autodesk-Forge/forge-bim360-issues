@@ -131,8 +131,17 @@ function prepareUserHubsTree() {
   }).bind("activate_node.jstree", function (evt, data) {
     if (data != null && data.node != null && data.node.type == 'versions') {
       $("#forgeViewer").empty();
-      var urn = data.node.id;
-      launchViewer(urn);
+      var urn;
+      var viewableId
+      if (data.node.id.indexOf('|') > -1) {
+        urn = data.node.id.split('|')[1];
+        viewableId = data.node.id.split('|')[2];
+        launchViewer(urn, viewableId);
+      }
+      else {
+        launchViewer(data.node.id);
+      }
+      
     }
   });
 }
