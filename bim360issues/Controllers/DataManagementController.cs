@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using Autodesk.Forge;
 using Autodesk.Forge.Model;
 using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace bim360issues.Controllers
 {
@@ -175,38 +176,58 @@ namespace bim360issues.Controllers
                 visibleTypes = folder.data.attributes.extension.data.visibleTypes;
 
             var folderContents = await folderApi.GetFolderContentsAsync(projectId, folderId);
+            // the GET Folder Contents has 2 main properties: data & included (not always available)
             var folderData = new DynamicDictionaryItems(folderContents.data);
             var folderIncluded = (folderContents.Dictionary.ContainsKey("included") ? new DynamicDictionaryItems(folderContents.included) : null);
+
+            // let's start iterating the FOLDER DATA
             foreach (KeyValuePair<string, dynamic> folderContentItem in folderData)
             {
-                // do we need to skipsome item?
+                // do we need to skip some items? based on the visibleTypes of this folder
                 string extension = folderContentItem.Value.attributes.extension.type;
-                if (extension.IndexOf("Folder") == -1 && visibleTypes != null && !visibleTypes.ToString().Contains(extension)) continue;
+                if (extension.IndexOf("Folder") /*any folder*/ == -1 && visibleTypes != null && !visibleTypes.ToString().Contains(extension)) continue;
 
-
-                jsTreeNode itemNode = null;
-                if (extension.IndexOf("Document") > 0)
+                // if the type is items:autodesk.bim360:Document we need some manipulation...
+                if (extension.Equals("items:autodesk.bim360:Document"))
                 {
+                    // as this is a DOCUMENT, lets interate the FOLDER INCLUDED to get the name (known issue)
                     foreach (KeyValuePair<string, dynamic> includedItem in folderIncluded)
+                    {
+                        // check if the id match...
                         if (includedItem.Value.relationships.item.data.id.IndexOf(folderContentItem.Value.id) != -1)
+                        {
+                            // found it! now we need to go back on the FOLDER DATA to get the respective FILE for this DOCUMENT
                             foreach (KeyValuePair<string, dynamic> folderContentItem1 in folderData)
                             {
-                                if (folderContentItem1.Value.attributes.extension.type.IndexOf("File") == -1) continue;
+                                if (folderContentItem1.Value.attributes.extension.type.IndexOf("File") == -1) continue; // skip if type is NOT File
+
+                                // check if the sourceFileName match...
                                 if (folderContentItem1.Value.attributes.extension.data.sourceFileName == includedItem.Value.attributes.extension.data.sourceFileName)
                                 {
-                                    string urn = string.Format("{0}|{1}|{2}",
+                                    // ready!
+
+                                    // let's return for the jsTree with a special id:
+                                    // itemUrn|versionUrn|viewableId
+                                    // itemUrn: used as target_urn to get document issues
+                                    // versionUrn: used to launch the Viewer
+                                    // viewableId: which viewable should be loaded on the Viewer
+                                    // this information will be extracted when the user click on the tree node, see ForgeTree.js:136 (activate_node.jstree event handler)
+                                    string treeId = string.Format("{0}|{1}|{2}",
                                         folderContentItem.Value.id, // item urn
                                         Base64Encode(folderContentItem1.Value.relationships.tip.data.id), // version urn
                                         includedItem.Value.attributes.extension.data.viewableId // viewableID
                                     );
-                                    itemNode = new jsTreeNode(urn, includedItem.Value.attributes.name, "versions", false);
+                                    nodes.Add(new jsTreeNode(treeId, WebUtility.UrlDecode(includedItem.Value.attributes.name), "versions", false));
                                 }
                             }
+                        }
+                    }
                 }
                 else
-                    itemNode = new jsTreeNode(folderContentItem.Value.links.self.href, folderContentItem.Value.attributes.displayName, (string)folderContentItem.Value.type, true);
-
-                nodes.Add(itemNode);
+                {
+                    // non-Plans folder items
+                    nodes.Add(new jsTreeNode(folderContentItem.Value.links.self.href, folderContentItem.Value.attributes.displayName, (string)folderContentItem.Value.type, true));
+                }
             }
 
             return nodes;
