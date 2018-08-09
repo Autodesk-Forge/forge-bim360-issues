@@ -47,7 +47,7 @@ function launchViewer(urn, viewableId) {
         return;
       }
 
-      if (viewableId != '') {
+      if (viewableId !== undefined) {
         viewables.forEach(function (viewable) {
           if (viewable.data.viewableID == viewableId)
             viewerApp.selectItem(viewable.data, onItemLoadSuccess, onItemLoadFail);
