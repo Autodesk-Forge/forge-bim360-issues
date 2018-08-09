@@ -35,6 +35,7 @@ This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/d
 2. **Forge Account**: Learn how to create a Forge Account, activate subscription and create an app at [this tutorial](http://learnforge.autodesk.io/#/account/). 
 3. **Visual Studio**: Either Community (Windows) or Code (Windows, MacOS).
 4. **.NET Core** basic knowledge with C#
+5. **JavaScript** basic knowledge with **jQuery**
 
 ## Running locally
 
@@ -50,7 +51,7 @@ Right-click on the project, then go to **Debug**. Adjust the settings as shown b
 
 **Visual Sutdio Code** (Windows, MacOS):
 
-Open the folder, at the bottom-right, select **Yes** and **Restore**. This restores the packages (e.g. Autodesk.Forge) and creates the launch.json file.
+Open the folder, at the bottom-right, select **Yes** and **Restore**. This restores the packages (e.g. Autodesk.Forge) and creates the launch.json file. See *Tips & Tricks* for .NET Core on MacOS.
 
 ![](bim360issues/wwwroot/img/visual_code_restore.png)
 
