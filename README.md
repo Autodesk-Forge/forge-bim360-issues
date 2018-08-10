@@ -1,4 +1,4 @@
-# data.management-csharp-bim360.issues
+# bim360-csharp-issues
 
 ![Platforms](https://img.shields.io/badge/platform-Windows|MacOS-lightgray.svg)
 ![.NET](https://img.shields.io/badge/.NET%20Core-2.1-blue.svg)
@@ -29,7 +29,7 @@ This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/d
 
 # Setup
 
-## Pre-requirements
+## Prerequisites
 
 1. **BIM 360 Account**: must be Account Admin to add the app integration. [Learn about provisioning](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps).
 2. **Forge Account**: Learn how to create a Forge Account, activate subscription and create an app at [this tutorial](http://learnforge.autodesk.io/#/account/). 
@@ -41,7 +41,7 @@ This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/d
 
 Clone this project or download it. It's recommended to install [GitHub desktop](https://desktop.github.com/). To clone it via command line, use the following (**Terminal** on MacOSX/Linux, **Git Shell** on Windows):
 
-    git clone https://github.com/autodesk-forge/data.management-csharp-bim360
+    git clone https://github.com/autodesk-forge/bim360-csharp-issues
 
 **Visual Studio** (Windows):
 
