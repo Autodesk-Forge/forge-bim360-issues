@@ -69,7 +69,11 @@ function onItemLoadSuccess(viewer, item) {
     hideRfisButton: true,
     hideFieldIssuesButton: true,
   };
-  viewer.loadExtension('Autodesk.BIM360.Extension.PushPin', extensionOptions);
+    viewer.loadExtension('Autodesk.BIM360.Extension.PushPin', extensionOptions).then(function (res) {
+
+        var bimext = viewer.getExtension('BIM360IssueExtension');
+        bimext.loadIssueByInit();
+    });
 }
 
 function onItemLoadFail(errorCode) {
