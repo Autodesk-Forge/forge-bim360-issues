@@ -116,6 +116,9 @@ function prepareUserHubsTree() {
       'items': {
         'icon': 'glyphicon glyphicon-file'
       },
+      'bim360documents': {
+        'icon': 'glyphicon glyphicon-file'
+      },
       'folders': {
         'icon': 'glyphicon glyphicon-folder-open'
       },
@@ -129,7 +132,7 @@ function prepareUserHubsTree() {
     "plugins": ["types", "state", "sort"],
     "state": { "key": "autodeskHubs" }// key restore tree state
   }).bind("activate_node.jstree", function (evt, data) {
-    if (data != null && data.node != null && data.node.type == 'versions') {
+    if (data != null && data.node != null && (data.node.type == 'versions' || data.node.type == 'bim360documents')) {
       var urn;
       var viewableId
       if (data.node.id.indexOf('|') > -1) {

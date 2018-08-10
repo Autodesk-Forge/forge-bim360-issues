@@ -217,7 +217,7 @@ namespace bim360issues.Controllers
                                         Base64Encode(folderContentItem1.Value.relationships.tip.data.id), // version urn
                                         includedItem.Value.attributes.extension.data.viewableId // viewableID
                                     );
-                                    nodes.Add(new jsTreeNode(treeId, WebUtility.UrlDecode(includedItem.Value.attributes.name), "versions", false));
+                                    nodes.Add(new jsTreeNode(treeId, WebUtility.UrlDecode(includedItem.Value.attributes.name), "bim360documents", false));
                                 }
                             }
                         }
