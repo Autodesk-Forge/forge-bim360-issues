@@ -130,7 +130,6 @@ function prepareUserHubsTree() {
     "state": { "key": "autodeskHubs" }// key restore tree state
   }).bind("activate_node.jstree", function (evt, data) {
     if (data != null && data.node != null && data.node.type == 'versions') {
-     // $("#forgeViewer").empty();
       var urn;
       var viewableId
       if (data.node.id.indexOf('|') > -1) {
@@ -141,7 +140,6 @@ function prepareUserHubsTree() {
       else {
         launchViewer(data.node.id);
       }
-      
     }
   });
 }
