@@ -80,7 +80,8 @@ BIM360IssueExtension.prototype.createUI = function () {
     new Autodesk.Viewing.UI.ControlGroup('MyAppToolbar'));
   this.subToolbar.addControl(bim360IssueToolbarButton);
 
-  this.viewer.toolbar.addControl(this.subToolbar);
+    this.viewer.toolbar.addControl(this.subToolbar);
+     
 };
 
 BIM360IssueExtension.prototype.unload = function () {
@@ -134,12 +135,28 @@ function id(href) {
 // Issue specific features
 // *******************************************
 BIM360IssueExtension.prototype.loadIssues = function (containerId, urn) {
+
+  //probably it is unneccesary to get container id and urn again
+  //because Pushpin initialization has done.
+  //but still keep these line 
   var _this = this;
   var selected = getSelectedNode();
   _this.getContainerId(selected.project, selected.urn, function () {
     // ready to load Issues...
-    _this.getIssues(_this.containerId, selected.urn);
+    _this.getIssues(_this.containerId, selected.urn,true);
   });
+}
+
+// *******************************************
+//  
+// *******************************************
+BIM360IssueExtension.prototype.loadIssueByInit = function (containerId, urn) {
+    var _this = this;
+    var selected = getSelectedNode();
+    _this.getContainerId(selected.project, selected.urn, function () {
+        // ready to load Issues...
+        _this.getIssues(_this.containerId, selected.urn,false);
+    });
 }
 
 
@@ -154,19 +171,24 @@ BIM360IssueExtension.prototype.getContainerId = function (href, urn, cb) {
   });
 }
 
-BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
+BIM360IssueExtension.prototype.getIssues = function (containerId, urn,byPanel) {
   var _this = this;
   urn = urn.split('?')[0]
   urn = btoa(urn);
   PushPinExtensionHandle = _this.viewer.getExtension('Autodesk.BIM360.Extension.PushPin'); // thenable
+  //remove the list of last time 
+  PushPinExtensionHandle.removeAllItems(); 
   PushPinExtensionHandle.showAll();
   jQuery.get('/api/forge/bim360/container/' + containerId + '/issues/' + urn, function (data) {
     _this.Issues = data;
     data.forEach(function (issue) {
-      var dateCreated = moment(issue.attributes.created_at);
-      _this.panel.addProperty('Title', issue.attributes.title, 'Issue ' + issue.attributes.identifier);
-      _this.panel.addProperty('Location', stringOrEmpty(issue.attributes.location_description), 'Issue ' + issue.attributes.identifier);
-      _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Issue ' + issue.attributes.identifier);
+        var dateCreated = moment(issue.attributes.created_at);
+        if (byPanel) { 
+            //if Issue Panel is invoked
+            _this.panel.addProperty('Title', issue.attributes.title, 'Issue ' + issue.attributes.identifier);
+            _this.panel.addProperty('Location', stringOrEmpty(issue.attributes.location_description), 'Issue ' + issue.attributes.identifier);
+            _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Issue ' + issue.attributes.identifier);
+        }
 
       var issueAttributes = issue.attributes;
       var pushpinAttributes = issue.attributes.pushpin_attributes;
@@ -186,6 +208,7 @@ BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
     alert('Cannot read Issues');
   });
 }
+ 
 
 function stringOrEmpty(str){
   if (str==null) return '';
