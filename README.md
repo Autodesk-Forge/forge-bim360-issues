@@ -21,7 +21,7 @@ This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/d
 
 ## Thumbnail
 
-![](bim360issues/wwwroot/img/app_demo.gif)
+![](/thumbnail.gif)
 
 ## Live version
 
