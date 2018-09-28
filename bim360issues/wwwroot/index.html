@@ -4,7 +4,7 @@
 <head>
   <title>Autodesk Forge - BIM 360 Issues</title>
   <meta charset="utf-8" />
-  <link rel="shortcut icon" href="https://github.com/Autodesk-Forge/bim360appstore-data.management-nodejs-transfer.storage/raw/master/www/favicon.ico">
+  <link rel="shortcut icon" href="https://github.com/Autodesk-Forge/learn.forge.viewhubmodels/raw/master/img/favicon.ico">
   <!-- Common packages: jQuery, Bootstrap, jsTree -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -34,6 +34,10 @@
           </a>
         </li>
       </ul>
+      <div style="float: right; margin-top: 15px;">
+        <span style="padding-right: 5px;" data-toggle="modal" data-target="#provisionAccountModal" title="Enable my BIM 360 Account"><span
+            class="glyphicon glyphicon-cog glyphiconTop mlink"> </span> Enable my BIM 360 Account</span>
+      </div>
     </div>
   </nav>
   <!-- End of navbar -->
@@ -50,7 +54,7 @@
           <div id="userHubs">
             <div style="padding-top: 100px; text-align: center;">
               <button class="btn btn-lg btn-default" id="autodeskSigninButton">
-                <img src="https://github.com/Autodesk-Forge/bim360appstore-data.management-nodejs-transfer.storage/raw/master/www/img/autodesk_text.png"
+                <img src="https://github.com/Autodesk-Forge/learn.forge.viewhubmodels/raw/master/img/autodesk_text.png"
                   height="20"> Sign in
               </button>
               <br />
@@ -79,7 +83,8 @@
           <h4 class="modal-title">Thanks for using this sample!</h4>
         </div>
         <div class="modal-body">
-          <p>To view your BIM 360 Docs files on this app please authorize my Forge Client ID with your BIM 360 Docs Account.
+          <p>To view your BIM 360 Docs files on this app please authorize my Forge Client ID with your BIM 360 Docs
+            Account.
           </p>
           <p>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#provisionAccountStepsModal">
@@ -90,13 +95,14 @@
           Use this as Forge Client ID:
           <div class="input-group">
             <input type="text" readonly="true" aria-describedby="CopyClientID" id="ClientID" class="form-control" value="" />
-            <span class="input-group-addon" style="cursor: pointer" data-clipboard-target="#ClientID" id="CopyClientID">Copy to clipboard</span>
+            <span class="input-group-addon" style="cursor: pointer" data-clipboard-target="#ClientID" id="CopyClientID">Copy
+              to clipboard</span>
           </div>
           And this App Name:
           <div class="input-group">
-            <input type="text" readonly="true" aria-describedby="CopyAppName" id="AppName" class="form-control" value="BIM 360 Sample"
-            />
-            <span class="input-group-addon" style="cursor: pointer" data-clipboard-target="#AppName" id="CopyAppName">Copy to clipboard</span>
+            <input type="text" readonly="true" aria-describedby="CopyAppName" id="AppName" class="form-control" value="BIM 360 Sample" />
+            <span class="input-group-addon" style="cursor: pointer" data-clipboard-target="#AppName" id="CopyAppName">Copy
+              to clipboard</span>
           </div>
         </div>
         <div class="modal-footer">
@@ -126,13 +132,14 @@
             <li>If you have more than one account, select the account you want to integrate with the app.</li>
             <li>From the toolbar, select
               <strong>SETTINGS &gt; Apps &amp; Integrations</strong>.
-              <br/>
-              <img src="/img/provisioning/Step1.png" width="500" />
+              <br />
+              <img src="https://github.com/Autodesk-Forge/learn.forge.viewhubmodels/raw/master/img/provisioning/Step1.png"
+                width="500" />
             </li>
             <li>Click the
               <strong>Add Integration</strong> button.
-              <br/>
-              <img src="/img/provisioning/Step2.png" />
+              <br />
+              <img src="https://github.com/Autodesk-Forge/learn.forge.viewhubmodels/raw/master/img/provisioning/Step2.png" />
             </li>
             <li>Select
               <strong>BIM 360 Account Administration</strong> and
@@ -149,8 +156,9 @@
             <li>Select the
               <strong>I have saved the Account ID information securely</strong> checkbox.</li>
             <li>Click
-              <strong>Save</strong>.</br>
-              <img src="/img/provisioning/Step3.png" width="500" />
+              <strong>Save</strong>.<br />
+              <img src="https://github.com/Autodesk-Forge/learn.forge.viewhubmodels/raw/master/img/provisioning/Step3.png"
+                width="500" />
             </li>
             <p></p>
             <p>Congratulations! You can now access your BIM 360 Docs files.</p>
@@ -166,6 +174,6 @@
     new Clipboard('.input-group-addon');
   </script>
 </body>
-<iframe id="hiddenFrame" style="visibility: hidden; display: none;" />
+<iframe id="hiddenFrame" style="visibility: hidden; display: none;">
 
 </html>
