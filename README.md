@@ -21,7 +21,7 @@ This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/d
 
 ## Thumbnail
 
-![](/thumbnail.gif)
+![thumbnail](/thumbnail.gif)
 
 ## Live version
 
