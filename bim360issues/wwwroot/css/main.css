@@ -22,14 +22,14 @@ body {
   width: 100%;
 }
 
-.bim360MarkupToolbarButton {
+.createQualityIssues {
   background-image: url(https://github.com/encharm/Font-Awesome-SVG-PNG/raw/master/white/png/24/pencil.png);
   background-size: 24px;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-.bim360IssueToolbarButton {
+.loadQualityIssues {
   background-image: url(https://github.com/encharm/Font-Awesome-SVG-PNG/raw/master/white/png/24/exclamation-triangle.png);
   background-size: 24px;
   background-repeat: no-repeat;

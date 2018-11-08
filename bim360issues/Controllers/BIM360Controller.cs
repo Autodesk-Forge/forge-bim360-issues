@@ -67,7 +67,7 @@ namespace bim360issues.Controllers
 
         [HttpGet]
         [Route("api/forge/bim360/container/{containerId}/issues/{urn}")]
-        public async Task<JArray> DocumentIssues(string containerId, string urn)
+        public async Task<JArray> GetDocumentIssues(string containerId, string urn)
         {
             IRestResponse documentIssuesResponse = await Get(containerId, "issues", urn);
 
@@ -78,6 +78,30 @@ namespace bim360issues.Controllers
             }
 
             return issues.data;
+        }
+
+        public async Task<IRestResponse> Post(string containerId, string resource, JObject data)
+        {
+            Credentials credentials = await Credentials.FromSessionAsync(base.Request.Cookies, Response.Cookies);
+
+            RestClient client = new RestClient(BASE_URL);
+            RestRequest request = new RestRequest("/issues/v1/containers/{container_id}/{resource}", RestSharp.Method.POST);
+            request.AddParameter("container_id", containerId, ParameterType.UrlSegment);
+            request.AddParameter("resource", resource, ParameterType.UrlSegment);
+            request.AddHeader("Authorization", "Bearer " + credentials.TokenInternal);
+            request.AddHeader("Content-Type", "application/vnd.api+json");
+            request.AddParameter("text/json", Newtonsoft.Json.JsonConvert.SerializeObject(data), ParameterType.RequestBody);
+
+            return await client.ExecuteTaskAsync(request);
+        }
+
+        [HttpPost]
+        [Route("api/forge/bim360/container/{containerId}/issues/{urn}")]
+        public async Task<IActionResult> CreateDocumentIssues(string containerId, string urn, [FromBody]JObject data)
+        {
+            IRestResponse documentIssuesResponse = await Post(containerId, "issues", data);
+
+            return Ok();
         }
     }
 }
