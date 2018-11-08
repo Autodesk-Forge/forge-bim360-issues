@@ -264,6 +264,7 @@ BIM360IssueExtension.prototype.showIssues = function () {
   var pushPinExtension = _this.viewer.getExtension(_this.pushPinExtensionName);
   pushPinExtension.removeAllItems();
   pushPinExtension.showAll();
+  var selected = getSelectedNode();
 
   _this.issues.forEach(function (issue) {
     var dateCreated = moment(issue.attributes.created_at);
@@ -271,7 +272,8 @@ BIM360IssueExtension.prototype.showIssues = function () {
     // show issue on panel
     if (_this.panel) {
       _this.panel.addProperty('Title', issue.attributes.title, 'Issue ' + issue.attributes.identifier);
-      _this.panel.addProperty('Location', stringOrEmpty(issue.attributes.location_description), 'Issue ' + issue.attributes.identifier);
+      //_this.panel.addProperty('Location', stringOrEmpty(issue.attributes.location_description), 'Issue ' + issue.attributes.identifier);
+      _this.panel.addProperty('Version', 'V' + issue.attributes.starting_version + (selected.version != issue.attributes.starting_version ? ' (Not current)' : ''), 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Issue ' + issue.attributes.identifier);
     }
 
@@ -305,7 +307,7 @@ function getSelectedNode() {
 
   if (node.id.indexOf('|') > -1) { // Plans folder
     var params = node.id.split("|");
-    return { 'project': parent, 'urn': params[0] };
+    return { 'project': parent, 'urn': params[0], 'version': params[3] };
   }
   else { // other folders
     for (var i = 0; i < node.parents.length; i++) {

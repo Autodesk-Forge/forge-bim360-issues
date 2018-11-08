@@ -212,10 +212,11 @@ namespace bim360issues.Controllers
                                     // versionUrn: used to launch the Viewer
                                     // viewableId: which viewable should be loaded on the Viewer
                                     // this information will be extracted when the user click on the tree node, see ForgeTree.js:136 (activate_node.jstree event handler)
-                                    string treeId = string.Format("{0}|{1}|{2}",
+                                    string treeId = string.Format("{0}|{1}|{2}|{3}",
                                         folderContentItem.Value.id, // item urn
                                         Base64Encode(folderContentItem1.Value.relationships.tip.data.id), // version urn
-                                        includedItem.Value.attributes.extension.data.viewableId // viewableID
+                                        includedItem.Value.attributes.extension.data.viewableId, // viewableID
+                                        includedItem.Value.attributes.versionNumber
                                     );
                                     nodes.Add(new jsTreeNode(treeId, WebUtility.UrlDecode(includedItem.Value.attributes.name), "bim360documents", false));
                                 }
