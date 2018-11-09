@@ -65,7 +65,7 @@ BIM360IssueExtension.prototype.createUI = function () {
     loadQualityIssues.onClick = function (e) {
       // check if the panel is created or not
       if (_this.panel == null) {
-        _this.panel = new BIM360IssuePanel(_this.viewer, _this.viewer.container, 'bim360IssuePanel', 'BIM 360 Quality Issues');
+        _this.panel = new BIM360IssuePanel(_this.viewer, _this.viewer.container, 'bim360IssuePanel', 'BIM 360 Issues');
       }
       // show/hide docking panel
       _this.panel.setVisible(!_this.panel.isVisible());
@@ -77,7 +77,7 @@ BIM360IssueExtension.prototype.createUI = function () {
       _this.loadIssues();
     };
     loadQualityIssues.addClass('loadQualityIssues');
-    loadQualityIssues.setToolTip('Show Quality Issues');
+    loadQualityIssues.setToolTip('Show Issues');
     this.subToolbar.addControl(loadQualityIssues);
   }
 
@@ -97,7 +97,7 @@ BIM360IssueExtension.prototype.createUI = function () {
         _this.createIssue(); // show issues
     };
     createQualityIssues.addClass('createQualityIssues');
-    createQualityIssues.setToolTip('Create Quality Issues');
+    createQualityIssues.setToolTip('Create Issues');
     this.subToolbar.addControl(createQualityIssues);
   }
 };
@@ -252,7 +252,7 @@ BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
         _this.showIssues(); // show issues
     }
     else {
-      if (_this.panel) _this.panel.addProperty('No issues found', 'Use BIM 360 Docs to create issues');
+      if (_this.panel) _this.panel.addProperty('No issues found', 'Use create issues button');
     }
   }).fail(function (error) {
     alert('Cannot read Issues');
