@@ -123,7 +123,7 @@ BIM360IssueExtension.prototype.createIssue = function () {
     var issue = pushPinExtension.getItemById('0');
     if (issue === null) return; // safeguard
     var data = {
-      type: issue.type,
+      type: 'quality_issues',//issue.type,
       attributes: {
         title: issue.label, // In our example, this is the ``title`` the user sets in the form data (see step 3).
         // The extension retrieved the ``type`` and ``status`` properties in step 3, concatenated them, added a dash, and
@@ -135,8 +135,8 @@ BIM360IssueExtension.prototype.createIssue = function () {
         target_urn: target_urn,
         starting_version: starting_version, // See step 1 for the version ID.
         // The issue type ID and issue subtype ID. See GET ng-issue-types for more details.
-        //ng_issue_type_id: "",
-        //ng_issue_subtype_id: "",
+        //ng_issue_subtype_id: "f6689e90-12ee-4cc8-af7a-afe10a37eeaa",
+        ng_issue_type_id: "35f5c820-1e13-41e2-b553-0355b2b8b3dd",
         // ``sheet_metadata`` is the sheet in the document associated with the pushpin.
         sheet_metadata: { // `viewerApp.selectedItem` references the current sheet
           is3D: viewerApp.selectedItem.is3D(),
@@ -163,6 +163,8 @@ BIM360IssueExtension.prototype.createIssue = function () {
           _this.loadIssues();
         },
         error: function (err) {
+          console.log(err.responseText);
+          pushPinExtension.pushPinManager.removeItemById('0');
           alert('Cannot create issue');
         }
       });
