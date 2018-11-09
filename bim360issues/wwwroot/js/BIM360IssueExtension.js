@@ -283,6 +283,7 @@ BIM360IssueExtension.prototype.showIssues = function () {
     var issueAttributes = issue.attributes;
     var pushpinAttributes = issue.attributes.pushpin_attributes;
     if (pushpinAttributes) {
+      issue.type = issue.type.replace('quality_', ''); // temp fix during issues > quality_issues migration
       pushPinExtension.createItem({
         id: issue.id,
         label: issueAttributes.identifier,
