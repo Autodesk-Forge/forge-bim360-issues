@@ -13,11 +13,11 @@
 
 # Description
 
-Demonstrate how to read BIM 360 **Document Issues** using built-in PushPin Viewer extension.
+Demonstrate how to read and create BIM 360 **Quality Issues** using built-in PushPin Viewer extension.
 
 Uses [Data Management](https://developer.autodesk.com/en/docs/data/v2) to list hubs, projects and files. Uses [Viewer](https://developer.autodesk.com/en/docs/viewer/v6/overview/) to show models and extensions to create toolbar buttons and panels. The lists [BIM 360](https://developer.autodesk.com/en/docs/bim360/v1/overview/) Document Issues on the panel. Uses the `Autodesk.BIM360.Extension.PushPin` built-in extension to show pins on the model. 
 
-This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/docs/bim360/v1/tutorials/retrieve-issues/) tutorial.
+This sample implements the [Retrieve Container ID](https://forge.autodesk.com/en/docs/bim360/v1/tutorials/issues/retrieve-container-id/), [Retrieve Issues](https://developer.autodesk.com/en/docs/bim360/v1/tutorials/retrieve-issues/) and [Create Issues](https://forge.autodesk.com/en/docs/bim360/v1/tutorials/issues/create-issues/) tutorials on server-side (C#) and [Render Pushpin](https://forge.autodesk.com/en/docs/bim360/v1/tutorials/pushpins/retrieve-pushpin/) and [Create Pushpin](https://forge.autodesk.com/en/docs/bim360/v1/tutorials/pushpins/create-pushpin/) tutorials on the client-side (JavaScript).
 
 ## Thumbnail
 
@@ -33,7 +33,7 @@ This sample implements the [Retrieve Issues](https://developer.autodesk.com/en/d
 
 1. **BIM 360 Account**: must be Account Admin to add the app integration. [Learn about provisioning](https://forge.autodesk.com/blog/bim-360-docs-provisioning-forge-apps).
 2. **Forge Account**: Learn how to create a Forge Account, activate subscription and create an app at [this tutorial](http://learnforge.autodesk.io/#/account/). 
-3. **Visual Studio**: Either Community (Windows) or Code (Windows, MacOS).
+3. **Visual Studio**: Either Community 2017+ (Windows) or Code (Windows, MacOS).
 4. **.NET Core** basic knowledge with C#
 5. **JavaScript** basic knowledge with **jQuery**
 
@@ -67,6 +67,8 @@ At the `.vscode\launch.json`, find the env vars and add your Forge Client ID, Se
 },
 ```
 
+Run the app. Open `http://localhost:3000` to view your files. It may be required to **Enable my BIM 360 Account** (see app top-right). Click on 
+
 ## Deployment
 
 To deploy this application to Heroku, the **Callback URL** for Forge must use your `.herokuapp.com` address. After clicking on the button below, at the Heroku Create New App page, set your Client ID, Secret and Callback URL for Forge.
@@ -87,6 +89,7 @@ Tutorials:
 
 - [View BIM 360 Models](http://learnforge.autodesk.io/#/tutorials/viewhubmodels)
 - [Retrieve Issues](https://developer.autodesk.com/en/docs/bim360/v1/tutorials/retrieve-issues)
+- [Create Issues](https://forge.autodesk.com/en/docs/bim360/v1/tutorials/issues/create-issues/)
 
 Blogs:
 
