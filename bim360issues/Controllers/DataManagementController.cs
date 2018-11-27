@@ -207,10 +207,11 @@ namespace bim360issues.Controllers
                                     // ready!
 
                                     // let's return for the jsTree with a special id:
-                                    // itemUrn|versionUrn|viewableId
+                                    // itemUrn|versionUrn|viewableId|versionNumber
                                     // itemUrn: used as target_urn to get document issues
                                     // versionUrn: used to launch the Viewer
                                     // viewableId: which viewable should be loaded on the Viewer
+                                    // versionNumber: version number of the document
                                     // this information will be extracted when the user click on the tree node, see ForgeTree.js:136 (activate_node.jstree event handler)
                                     string treeId = string.Format("{0}|{1}|{2}|{3}",
                                         folderContentItem.Value.id, // item urn
