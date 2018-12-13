@@ -25,6 +25,7 @@ function BIM360IssueExtension(viewer, options) {
   this.viewer = viewer;
   this.panel = null; // create the panel variable
   this.containerId = null;
+  this.hubId = null;
   this.issues = null;
   this.pushPinExtensionName = 'Autodesk.BIM360.Extension.PushPin';
 }
@@ -210,7 +211,7 @@ BIM360IssueExtension.prototype.loadIssues = function (containerId, urn) {
   var selected = getSelectedNode();
 
   _this.getContainerId(selected.project, selected.urn, function () {
-    _this.getIssues(_this.containerId, selected.urn, true);
+    _this.getIssues(_this.hubId, _this.containerId, selected.urn, true);
   });
 }
 
@@ -223,18 +224,19 @@ BIM360IssueExtension.prototype.getContainerId = function (href, urn, cb) {
   jQuery.ajax({
     url: '/api/forge/bim360/container?href=' + href,
     success: function (res) {
-      _this.containerId = res.container.id
+      _this.containerId = res.containerId;
+      _this.hubId = res.hubId;
       cb();
     }
   });
 }
 
-BIM360IssueExtension.prototype.getIssues = function (containerId, urn) {
+BIM360IssueExtension.prototype.getIssues = function (accountId, containerId, urn) {
   var _this = this;
   urn = urn.split('?')[0]
   urn = btoa(urn);
 
-  jQuery.get('/api/forge/bim360/container/' + containerId + '/issues/' + urn, function (data) {
+  jQuery.get('/api/forge/bim360/account/' + accountId + '/container/' + containerId + '/issues/' + urn, function (data) {
     _this.issues = data;
 
     // do we have issues on this document?
@@ -277,6 +279,7 @@ BIM360IssueExtension.prototype.showIssues = function () {
       //_this.panel.addProperty('Location', stringOrEmpty(issue.attributes.location_description), 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Version', 'V' + issue.attributes.starting_version + (selected.version != issue.attributes.starting_version ? ' (Not current)' : ''), 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Issue ' + issue.attributes.identifier);
+      _this.panel.addProperty('Assigned to', issue.attributes.assigned_to_name, 'Issue ' + issue.attributes.identifier);
     }
 
     // add the pushpin

@@ -33,7 +33,7 @@ namespace bim360issues.Controllers
 
         [HttpGet]
         [Route("api/forge/bim360/container")]
-        public async Task<JObject> GetContainerAsync(string href)
+        public async Task<dynamic> GetContainerAsync(string href)
         {
             string[] idParams = href.Split('/');
             string projectId = idParams[idParams.Length - 1];
@@ -46,10 +46,7 @@ namespace bim360issues.Controllers
             var project = await projectsApi.GetProjectAsync(hubId, projectId);
             var issues = project.data.relationships.issues.data;
             if (issues.type != "issueContainerId") return null;
-            JObject res = new JObject();
-            res.Add("container", JObject.Parse(issues.ToString()));
-            res.Add("project", JObject.Parse(project.data.ToString()));
-            return res;
+            return new { ContainerId = issues["id"], HubId = hubId };
         }
 
         public async Task<IRestResponse> GetIssuesAsync(string containerId, string resource, string urn)
@@ -66,16 +63,37 @@ namespace bim360issues.Controllers
             return await client.ExecuteTaskAsync(request);
         }
 
+        public async Task<IRestResponse> GetUsers(string accountId)
+        {
+            TwoLeggedApi oauth = new TwoLeggedApi();
+            dynamic bearer = await oauth.AuthenticateAsync(Credentials.GetAppSetting("FORGE_CLIENT_ID"), Credentials.GetAppSetting("FORGE_CLIENT_SECRET"), "client_credentials", new Scope[] { Scope.AccountRead });
+
+            RestClient client = new RestClient(BASE_URL);
+            RestRequest request = new RestRequest("/hq/v1/accounts/{account_id}/users", RestSharp.Method.GET);
+            request.AddParameter("account_id", accountId.Replace("b.", string.Empty), ParameterType.UrlSegment);
+            request.AddHeader("Authorization", "Bearer " + bearer.access_token);
+            return await client.ExecuteTaskAsync(request);
+        }
+
         [HttpGet]
-        [Route("api/forge/bim360/container/{containerId}/issues/{urn}")]
-        public async Task<JArray> GetDocumentIssuesAsync(string containerId, string urn)
+        [Route("api/forge/bim360/account/{accountId}/container/{containerId}/issues/{urn}")]
+        public async Task<JArray> GetDocumentIssuesAsync(string accountId, string containerId, string urn)
         {
             IRestResponse documentIssuesResponse = await GetIssuesAsync(containerId, "quality-issues", urn);
+            IRestResponse usersResponse = await GetUsers(accountId);
 
             dynamic issues = JObject.Parse(documentIssuesResponse.Content);
+            dynamic users = JArray.Parse(usersResponse.Content);
             foreach (dynamic issue in issues.data)
             {
-                // do some work with the data?
+                issue.attributes.assigned_to_name = "Not yet assigned"; // default value?
+                foreach (dynamic user in users)
+                {
+                    if (user.uid == issue.attributes.assigned_to)
+                    {
+                        issue.attributes.assigned_to_name = user.name;
+                    }
+                }
             }
 
             return issues.data;
