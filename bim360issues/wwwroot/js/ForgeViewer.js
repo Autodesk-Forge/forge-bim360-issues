@@ -16,13 +16,13 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-var mainViewer=null;
+var viewer=null;
 
 function launchViewer(urn, viewableId) { 
-    if (mainViewer!=null) {
-        mainViewer.tearDown()
-        mainViewer.finish()
-        mainViewer = null
+    if (viewer!=null) {
+        viewer.tearDown()
+        viewer.finish()
+        viewer = null
         $("#forgeViewer").empty();
     } 
   var options = {
