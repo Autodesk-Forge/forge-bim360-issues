@@ -40,13 +40,13 @@ BIM360IssueExtension.prototype.load = function () {
   } else {
     // Toolbar hasn't been created yet, wait until we get notification of its creation
     this.onToolbarCreatedBinded = this.onToolbarCreated.bind(this);
-    this.viewer.addEventListener(av.TOOLBAR_CREATED_EVENT, this.onToolbarCreatedBinded);
+    this.viewer.addEventListener(Autodesk.Viewing.TOOLBAR_CREATED_EVENT, this.onToolbarCreatedBinded);
   }
   return true;
 };
 
 BIM360IssueExtension.prototype.onToolbarCreated = function () {
-  this.viewer.removeEventListener(av.TOOLBAR_CREATED_EVENT, this.onToolbarCreatedBinded);
+  this.viewer.removeEventListener(Autodesk.Viewing.TOOLBAR_CREATED_EVENT, this.onToolbarCreatedBinded);
   this.onToolbarCreatedBinded = null;
   this.createUI();
 };
@@ -121,7 +121,11 @@ BIM360IssueExtension.prototype.createIssue = function () {
     var starting_version = Number.parseInt(selected.version);
     // https://forge.autodesk.com/en/docs/bim360/v1/tutorials/pushpins/create-pushpin/
     // Once the user clicks the ``Create Pushpin`` button (see step 3), you need to grab the current position of the newly created pushpin and the pushpin data using its ID, which is automatically set to ``0``.
-    var issue = pushPinExtension.getItemById('0');
+
+      //from viewer 7.0, it looks the default id for new item is not 0 anymore
+      //var issue = pushPinExtension.getItemById('0');
+      //we seem to have to get it from the first item of pushpin list, which is always the latest new one
+   var issue = pushPinExtension.getItemById(pushPinExtension.pushPinManager.pushPinList[0].itemData.id ); 
     if (issue === null) return; // safeguard
     var data = {
       type: 'quality_issues',//issue.type,
@@ -140,9 +144,9 @@ BIM360IssueExtension.prototype.createIssue = function () {
         ng_issue_type_id: "35f5c820-1e13-41e2-b553-0355b2b8b3dd",
         // ``sheet_metadata`` is the sheet in the document associated with the pushpin.
         sheet_metadata: { // `viewerApp.selectedItem` references the current sheet
-          is3D: viewerApp.selectedItem.is3D(),
-          sheetGuid: viewerApp.selectedItem.guid(),
-          sheetName: viewerApp.selectedItem.name()
+          is3D: this.viewer.model.is3D,
+          sheetGuid: this.viewer.model.getDocumentNode().data.guid,
+          sheetName: this.viewer.model.getDocumentNode().data.name
         },
         pushpin_attributes: { // Data about the pushpin
           type: 'TwoDVectorPushpin', // This is the only type currently available
@@ -157,7 +161,7 @@ BIM360IssueExtension.prototype.createIssue = function () {
     _this.getContainerId(selected.project, selected.urn, function () {
       var urn = btoa(target_urn.split('?')[0]);
       jQuery.post({
-        url: '/api/forge/bim360/container/' + _this.containerId + '/issues/' + urn,
+          url: '/api/forge/bim360/container/' + _this.containerId + '/issues/' + urn,
         contentType: 'application/json',
         data: JSON.stringify({ data: data }),
         success: function (res) {
@@ -236,7 +240,7 @@ BIM360IssueExtension.prototype.getIssues = function (accountId, containerId, urn
   urn = urn.split('?')[0]
   urn = btoa(urn);
 
-  jQuery.get('/api/forge/bim360/account/' + accountId + '/container/' + containerId + '/issues/' + urn, function (data) {
+    jQuery.get('/api/forge/bim360/account/' + accountId + '/container/' + containerId + '/issues/' + urn, function (data) {
     _this.issues = data;
 
     // do we have issues on this document?
@@ -270,6 +274,10 @@ BIM360IssueExtension.prototype.showIssues = function () {
   pushPinExtension.showAll();
   var selected = getSelectedNode();
 
+  //migrate to viewer 7.0
+  //	extension.loadItems([data])
+    var pushpinDataArray = [];
+
   _this.issues.forEach(function (issue) {
     var dateCreated = moment(issue.attributes.created_at);
 
@@ -286,18 +294,22 @@ BIM360IssueExtension.prototype.showIssues = function () {
     var issueAttributes = issue.attributes;
     var pushpinAttributes = issue.attributes.pushpin_attributes;
     if (pushpinAttributes) {
-      issue.type = issue.type.replace('quality_', ''); // temp fix during issues > quality_issues migration
-      pushPinExtension.createItem({
-        id: issue.id,
-        label: issueAttributes.identifier,
-        status: issue.type && issueAttributes.status.indexOf(issue.type) === -1 ? `${issue.type}-${issueAttributes.status}` : issueAttributes.status,
-        position: pushpinAttributes.location,
-        type: issue.type,
-        objectId: pushpinAttributes.object_id,
-        viewerState: pushpinAttributes.viewer_state
-      });
-    }
-  })
+        issue.type = issue.type.replace('quality_', ''); // temp fix during issues > quality_issues migration
+
+        pushpinDataArray.push({
+            id: issue.id,
+            label: issueAttributes.identifier,
+            status: issue.type && issueAttributes.status.indexOf(issue.type) === -1 ? `${issue.type}-${issueAttributes.status}` : issueAttributes.status,
+            position: pushpinAttributes.location,
+            type: issue.type,
+            objectId: pushpinAttributes.object_id,
+            viewerState: pushpinAttributes.viewer_state
+        });
+      } 
+    })
+
+  pushPinExtension.loadItems(pushpinDataArray);
+
 }
 
 // *******************************************

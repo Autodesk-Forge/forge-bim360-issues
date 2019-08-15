@@ -16,61 +16,43 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-var viewerApp;
+var viewer=null;
 
-function launchViewer(urn, viewableId) {
-  if (viewerApp != null) {
-    var thisviewer = viewerApp.getCurrentViewer();
-    if (thisviewer) {
-      thisviewer.tearDown()
-      thisviewer.finish()
-      thisviewer = null
-      $("#forgeViewer").empty();
-    }
-  }
-
+function launchViewer(urn, viewableId) { 
+    if (viewer!=null) {
+        viewer.tearDown()
+        viewer.finish()
+        viewer = null
+        $("#forgeViewer").empty();
+    } 
   var options = {
     env: 'AutodeskProduction',
     getAccessToken: getForgeToken,
     api: 'derivativeV2' + (atob(urn.replace('_', '/')).indexOf('emea') > -1 ? '_EU' : '')
-  };
-  var documentId = 'urn:' + urn;
-  Autodesk.Viewing.Initializer(options, function onInitialized() {
-    viewerApp = new Autodesk.Viewing.ViewingApplication('forgeViewer');
-    viewerApp.registerViewer(viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D, { extensions: ['BIM360IssueExtension'] });
-    viewerApp.loadDocument(documentId, function (doc) {
-      // We could still make use of Document.getSubItemsWithProperties()
-      // However, when using a ViewingApplication, we have access to the **bubble** attribute,
-      // which references the root node of a graph that wraps each object from the Manifest JSON.
-      var viewables = viewerApp.bubble.search({ 'type': 'geometry' });
-      if (viewables.length === 0) {
-        console.error('Document contains no viewables.');
-        return;
-      }
+  }; 
 
-      if (viewableId !== undefined) {
-        viewables.forEach(function (viewable) {
-          if (viewable.data.viewableID == viewableId)
-            viewerApp.selectItem(viewable.data, onItemLoadSuccess, onItemLoadFail);
+    Autodesk.Viewing.Initializer(options, () => {
+        const config3d = { 
+            extensions: ['BIM360IssueExtension'] 
+        };
+        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), config3d);
+        viewer.start();
+        var documentId = 'urn:' + urn;
+        Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+    });
+    function onDocumentLoadSuccess(doc) {
+        var viewables = (viewableId ? doc.getRoot().findByGuid(viewableId) : doc.getRoot().getDefaultGeometry());
+        viewer.loadDocumentNode(doc, viewables).then(i => {
+
         });
-      }
-      else
-        viewerApp.selectItem(viewables[0].data, onItemLoadSuccess, onItemLoadFail);
-    }, onDocumentLoadFailure);
-  });
+    }
+
+    function onDocumentLoadFailure(viewerErrorCode) {
+        console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
+    } 
 }
 
-function onDocumentLoadFailure(viewerErrorCode) {
-  console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
-}
 
-function onItemLoadSuccess(viewer, item) {
-  // item loaded, any custom action?
-}
-
-function onItemLoadFail(errorCode) {
-  console.error('onItemLoadFail() - errorCode:' + errorCode);
-}
 
 function getForgeToken(callback) {
   jQuery.ajax({
