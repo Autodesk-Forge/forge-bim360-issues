@@ -122,10 +122,9 @@ BIM360IssueExtension.prototype.createIssue = function () {
     // https://forge.autodesk.com/en/docs/bim360/v1/tutorials/pushpins/create-pushpin/
     // Once the user clicks the ``Create Pushpin`` button (see step 3), you need to grab the current position of the newly created pushpin and the pushpin data using its ID, which is automatically set to ``0``.
 
-      //from viewer 7.0, it looks the default id for new item is not 0 anymore
-      //var issue = pushPinExtension.getItemById('0');
-      //we seem to have to get it from the first item of pushpin list, which is always the latest new one
-   var issue = pushPinExtension.getItemById(pushPinExtension.pushPinManager.pushPinList[0].itemData.id ); 
+      //in the latest version of  Pushpin Extension, the index is as normal, from 0 and the last item is the newly added item
+      var currentPushpinList = pushPinExtension.pushPinManager.pushPinList;
+      var issue = pushPinExtension.getItemById(currentPushpinList[currentPushpinList.length-1].itemData.id ); 
     if (issue === null) return; // safeguard
     var data = {
       type: 'quality_issues',//issue.type,
