@@ -16,49 +16,37 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-var viewer=null;
+var viewer;
 
-function launchViewer(urn, viewableId) { 
-    if (viewer!=null) {
-        viewer.tearDown()
-        viewer.finish()
-        viewer = null
-        $("#forgeViewer").empty();
-    } 
+function launchViewer(urn, viewableId) {
   var options = {
     env: 'AutodeskProduction',
-    getAccessToken: getForgeToken,
-    api: 'derivativeV2' + (atob(urn.replace('_', '/')).indexOf('emea') > -1 ? '_EU' : '')
-  }; 
+    getAccessToken: getForgeToken
+  };
 
-    Autodesk.Viewing.Initializer(options, () => {
-        const config3d = { 
-            extensions: ['BIM360IssueExtension'] 
-        };
-        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), config3d);
-        viewer.start();
-        var documentId = 'urn:' + urn;
-        Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
-    });
-    function onDocumentLoadSuccess(doc) {
-        var viewables = (viewableId ? doc.getRoot().findByGuid(viewableId) : doc.getRoot().getDefaultGeometry());
-        viewer.loadDocumentNode(doc, viewables).then(i => {
-
-        });
-    }
-
-    function onDocumentLoadFailure(viewerErrorCode) {
-        console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
-    } 
+  Autodesk.Viewing.Initializer(options, () => {
+      viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: ['BIM360IssueExtension'] });
+      viewer.start();
+      var documentId = 'urn:' + urn;
+      Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+  });
 }
 
+function onDocumentLoadSuccess(doc) {
+  var viewables = doc.getRoot().getDefaultGeometry();
+  viewer.loadDocumentNode(doc, viewables).then(i => {
+      // documented loaded, any action?
+  });
+}
 
+function onDocumentLoadFailure(viewerErrorCode) {
+  console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
+}
 
 function getForgeToken(callback) {
-  jQuery.ajax({
-    url: '/api/forge/oauth/token',
-    success: function (res) {
-      callback(res.access_token, res.expires_in)
-    }
+  fetch('/api/forge/oauth/token').then(res => {
+      res.json().then(data => {
+          callback(data.access_token, data.expires_in);
+      });
   });
 }

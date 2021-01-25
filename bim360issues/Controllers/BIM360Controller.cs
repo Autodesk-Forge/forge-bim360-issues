@@ -55,12 +55,13 @@ namespace bim360issues.Controllers
             urn = Encoding.UTF8.GetString(Convert.FromBase64String(urn));
 
             RestClient client = new RestClient(BASE_URL);
-            RestRequest request = new RestRequest("/issues/v1/containers/{container_id}/{resource}?filter[target_urn]={urn}", RestSharp.Method.GET);
+            RestRequest request = new RestRequest("/issues/v1/containers/{container_id}/{resource}", RestSharp.Method.GET);
             request.AddParameter("container_id", containerId, ParameterType.UrlSegment);
-            request.AddParameter("urn", urn, ParameterType.UrlSegment);
+            request.AddParameter("filter[target_urn]", urn, ParameterType.QueryString);
             request.AddParameter("resource", resource, ParameterType.UrlSegment);
+            request.AddHeader("Content-Type", "application/vnd.api+json");
             request.AddHeader("Authorization", "Bearer " + credentials.TokenInternal);
-            return await client.ExecuteTaskAsync(request);
+            return await client.ExecuteAsync(request);
         }
 
         public async Task<IRestResponse> GetUsers(string accountId)
@@ -72,7 +73,7 @@ namespace bim360issues.Controllers
             RestRequest request = new RestRequest("/hq/v1/accounts/{account_id}/users", RestSharp.Method.GET);
             request.AddParameter("account_id", accountId.Replace("b.", string.Empty), ParameterType.UrlSegment);
             request.AddHeader("Authorization", "Bearer " + bearer.access_token);
-            return await client.ExecuteTaskAsync(request);
+            return await client.ExecuteAsync(request);
         }
 
         [HttpGet]
@@ -111,7 +112,7 @@ namespace bim360issues.Controllers
             request.AddHeader("Content-Type", "application/vnd.api+json");
             request.AddParameter("text/json", Newtonsoft.Json.JsonConvert.SerializeObject(data), ParameterType.RequestBody);
 
-            return await client.ExecuteTaskAsync(request);
+            return await client.ExecuteAsync(request);
         }
 
         public async Task<IRestResponse> GetIssueTypesAsync(string containerId)
@@ -124,7 +125,7 @@ namespace bim360issues.Controllers
             request.AddHeader("Authorization", "Bearer " + credentials.TokenInternal);
             request.AddHeader("Content-Type", "application/vnd.api+json");
 
-            return await client.ExecuteTaskAsync(request);
+            return await client.ExecuteAsync(request);
         }
 
 
