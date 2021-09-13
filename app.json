@@ -17,7 +17,7 @@
         },
         "FORGE_CALLBACK_URL": {
             "description": "Callback URL of your Forge app, required for 3-legged OAuth",
-            "value": "https://<<YOUR HEROKU APP NAME HERE>>.herokuapp.com/api/forge/callback/oauth"
+            "value": "https://bim360-issues-archives.herokuapp.com/api/forge/callback/oauth"
         }
     },
     "website": "https://developer.autodesk.com/",
