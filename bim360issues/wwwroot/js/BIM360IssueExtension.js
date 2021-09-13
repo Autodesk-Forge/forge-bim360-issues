@@ -29,7 +29,7 @@ function BIM360IssueExtension(viewer, options) {
   this.issues = null;
   this.pushPinExtensionName = 'Autodesk.BIM360.Extension.PushPin';
 }
-
+this.issuescollection = [['title', 'x', 'y', 'z']];
 BIM360IssueExtension.prototype = Object.create(Autodesk.Viewing.Extension.prototype);
 BIM360IssueExtension.prototype.constructor = BIM360IssueExtension;
 
@@ -253,8 +253,8 @@ BIM360IssueExtension.prototype.getIssues = function (accountId, containerId, urn
         };
         _this.viewer.loadExtension(_this.pushPinExtensionName, extensionOptions).then(function () { _this.showIssues(); }); // show issues (after load extension)
       }
-      else
-        _this.showIssues(); // show issues
+        else
+            _this.showIssues(); // show issues
     }
     else {
       if (_this.panel) _this.panel.addProperty('No issues found', 'Use create issues button');
@@ -263,6 +263,7 @@ BIM360IssueExtension.prototype.getIssues = function (accountId, containerId, urn
     alert('Cannot read Issues');
   });
 }
+
 
 BIM360IssueExtension.prototype.showIssues = function () {
   var _this = this;
@@ -279,14 +280,21 @@ BIM360IssueExtension.prototype.showIssues = function () {
 
   _this.issues.forEach(function (issue) {
     var dateCreated = moment(issue.attributes.created_at);
-
     // show issue on panel
     if (_this.panel) {
       _this.panel.addProperty('Title', issue.attributes.title, 'Issue ' + issue.attributes.identifier);
       //_this.panel.addProperty('Location', stringOrEmpty(issue.attributes.location_description), 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Version', 'V' + issue.attributes.starting_version + (selected.version != issue.attributes.starting_version ? ' (Not current)' : ''), 'Issue ' + issue.attributes.identifier);
       _this.panel.addProperty('Created at', dateCreated.format('MMMM Do YYYY, h:mm a'), 'Issue ' + issue.attributes.identifier);
-      _this.panel.addProperty('Assigned to', issue.attributes.assigned_to_name, 'Issue ' + issue.attributes.identifier);
+        _this.panel.addProperty('Assigned to', issue.attributes.assigned_to_name, 'Issue ' + issue.attributes.identifier);
+        pushplocation = issue.attributes.pushpin_attributes.location
+        _this.panel.addProperty('Position', JSON.stringify(pushplocation), 'Issue ' + issue.attributes.identifier);
+        _this.panel.addProperty('Position X', pushplocation.x, 'Issue ' + issue.attributes.identifier);
+        _this.panel.addProperty('Position Y', pushplocation.y, 'Issue ' + issue.attributes.identifier);
+        _this.panel.addProperty('Position Z', pushplocation.z, 'Issue ' + issue.attributes.identifier);
+        locationdata = [issue.attributes.title, pushplocation.x, pushplocation.y, pushplocation.z]
+        issuescollection.push(locationdata)
+       
     }
 
     // add the pushpin
@@ -307,10 +315,25 @@ BIM360IssueExtension.prototype.showIssues = function () {
       } 
     })
 
-  pushPinExtension.loadItems(pushpinDataArray);
+    pushPinExtension.loadItemsV2(pushpinDataArray);
+    console.log(issuescollection);
+
+    // csv creation
+    csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += issuescollection.join('\n')
+    var encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    var rightNow = new Date();
+    var res = rightNow.toISOString().slice(0, 10).replace(/-/g, "");
+    link.setAttribute("download", res + "_Issues_Location.csv");
+    document.body.appendChild(link); // Required for FF
+
+    link.click(); // This will download the data file named "my_data.csv".
+
 
 }
-
 // *******************************************
 // Helper functions
 // *******************************************
