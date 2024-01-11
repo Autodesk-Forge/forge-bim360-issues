@@ -1,3 +1,7 @@
+# DEPRECATED
+This repository has been deprecated and migrated to https://github.com/autodesk-platform-services/aps-bim360-issues
+
+
 # View and create BIM 360 Issues
 
 ![Platforms](https://img.shields.io/badge/platform-Windows|MacOS-lightgray.svg)
