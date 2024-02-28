@@ -1,7 +1,10 @@
-DEPRECATED
-This repository has been deprecated and migrated to [[https://github.com/autodesk-platform-services/aps-acc.issues.api-postman.collection](https://github.com/autodesk-platform-services/aps-bim360-issues)](https://github.com/autodesk-platform-services/aps-bim360-issues)
+# DEPRECATED
 
-Postman Collectio
+## This sample is deprecated.
+
+This repository has been deprecated and migrated to [https://github.com/autodesk-platform-services/aps-bim360-issues](https://github.com/autodesk-platform-services/aps-bim360-issues)
+
+**************
 
 # View and create BIM 360 Issues
 
